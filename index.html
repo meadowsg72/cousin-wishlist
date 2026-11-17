@@ -212,7 +212,9 @@ const CARDS = JSON.parse(document.getElementById('cards-data').textContent);
 const CATEGORIES = ['All', 'Tech & Gadgets', 'Fun & Games', 'Room Decor', 'Snacks & Sips'];
 const PLACEHOLDER = '<span class="ph" role="img" aria-label="Gift">&#127873;</span>';
 
-let state = { category: 'All', sort: 'random', order: shuffle(ITEMS.map(i => i.n)) };
+const PINNED_N = 16; // Beats Studio Pro headphones — pinned to the upper-middle slot in the randomized view (Grayson, 2026-11-17).
+
+let state = { category: 'All', sort: 'random', order: shuffledOrder() };
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -221,6 +223,12 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function shuffledOrder() {
+  const rest = shuffle(ITEMS.map(i => i.n).filter(n => n !== PINNED_N));
+  rest.splice(1, 0, PINNED_N);
+  return rest;
 }
 
 function esc(s) {
@@ -307,7 +315,7 @@ function renderGrid() {
 
 document.getElementById('sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
 document.getElementById('shuffle').addEventListener('click', () => {
-  state.order = shuffle(ITEMS.map(i => i.n));
+  state.order = shuffledOrder();
   state.sort = 'random';
   document.getElementById('sort').value = 'random';
   renderGrid();
